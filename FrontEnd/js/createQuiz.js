@@ -1,5 +1,5 @@
 function createQuiz() {
-  const title = document.getElementById("title").value;
+  const title = document.getElementById("title").value.trim();
   const questionsText = document.getElementById("questions").value;
   const token = localStorage.getItem("token");
 
@@ -25,12 +25,17 @@ function createQuiz() {
     body: JSON.stringify({
       title,
       questions,
-      duration: 1
+      duration: 10,
+      published: true
     })
   })
-  .then(res => res.json())
-  .then(data => {
-    alert("Quiz created successfully");
-    window.location.href = `quiz.html?id=${data.quizId}`;
-  });
+    .then(res => res.json())
+    .then(data => {
+      alert("Quiz created successfully");
+      // ✅ Redirect to dashboard (best UX)
+      window.location.href = "./dashboard.html";
+    })
+    .catch(() => {
+      alert("Failed to create quiz");
+    });
 }

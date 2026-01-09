@@ -5,14 +5,28 @@ const auth = require("../middleware/auth");
 
 const router = express.Router();
 
+router.get("/", async (req, res) => {
+  const quizzes = await Quiz.find().select("title _id");
+  res.json(quizzes);
+});
+
 router.post("/create", auth, async (req, res) => {
   const quiz = await Quiz.create({ ...req.body, creatorId: req.user.id });
   res.json({ quizId: quiz._id });
 });
 
 router.get("/:id", async (req, res) => {
-  const quiz = await Quiz.findById(req.params.id);
-  res.json(quiz);
+  try {
+    const quiz = await Quiz.findById(req.params.id); // ❗ NO .select()
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    res.json(quiz);
+  } catch (err) {
+    res.status(400).json({ message: "Invalid quiz id" });
+  }
 });
 
 router.post("/submit/:id", auth, async (req, res) => {

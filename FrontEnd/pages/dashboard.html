@@ -1,62 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Dashboard | Exam Portal</title>
-  <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard | Exam Portal</title>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="dashboard">
+      <h1>Dashboard</h1>
+      <p class="role-text" id="roleText"></p>
 
-  <div class="dashboard">
+      <!-- CREATOR SECTION -->
+      <div id="creatorSection" class="card" style="display: none">
+        <h2>Exam Creator</h2>
+        <p>Create and manage your quizzes.</p>
+        <a href="./create-quiz.html">
+          <button>Create New Quiz</button>
+        </a>
+      </div>
 
-    <h1>Dashboard</h1>
-    <p class="role-text" id="roleText"></p>
+      <!-- TAKER SECTION -->
+      <div id="takerSection" class="card" style="display: none">
+        <h2>Exam Taker</h2>
+        <p>View and attempt available quizzes.</p>
 
-    <!-- CREATOR SECTION -->
-    <div id="creatorSection" class="card" style="display:none;">
-      <h2>Exam Creator</h2>
-      <p>Create and manage your quizzes.</p>
-      <a href="./create-quiz.html">
-        <button>Create New Quiz</button>
-      </a>
+        <a href="./available-quizzes.html">
+          <button>View Available Quizzes</button>
+        </a>
+      </div>
+
+      <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
-    <!-- TAKER SECTION -->
-    <div id="takerSection" class="card" style="display:none;">
-      <h2>Exam Taker</h2>
-      <p>Attempt quizzes using shared links.</p>
-      <p>No quiz link? Ask your exam creator.</p>
-    </div>
+    <script>
+      // 🔐 Authentication check
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
 
-    <button class="logout-btn" onclick="logout()">Logout</button>
+      if (!token || !role) {
+        window.location.href = "./login.html";
+      }
 
-  </div>
+      document.getElementById("roleText").innerText = `Logged in as: ${role}`;
 
-  <script>
-    // 🔐 Authentication check
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
+      // 🎯 Role-based UI
+      if (role === "CREATOR") {
+        document.getElementById("creatorSection").style.display = "block";
+      } else {
+        document.getElementById("takerSection").style.display = "block";
+      }
 
-    if (!token || !role) {
-      window.location.href = "./login.html";
-    }
-
-    document.getElementById("roleText").innerText =
-      `Logged in as: ${role}`;
-
-    // 🎯 Role-based UI
-    if (role === "CREATOR") {
-      document.getElementById("creatorSection").style.display = "block";
-    } else {
-      document.getElementById("takerSection").style.display = "block";
-    }
-
-    // 🚪 Logout
-    function logout() {
-      localStorage.clear();
-      window.location.href = "./login.html";
-    }
-  </script>
-
-</body>
+      // 🚪 Logout
+      function logout() {
+        localStorage.clear();
+        window.location.href = "./login.html";
+      }
+    </script>
+  </body>
 </html>

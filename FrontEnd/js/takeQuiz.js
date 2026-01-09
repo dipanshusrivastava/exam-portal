@@ -1,25 +1,71 @@
-const id = new URLSearchParams(location.search).get("id");
+const params = new URLSearchParams(window.location.search);
+const quizId = params.get("id");
+
+const quizTitle = document.getElementById("quizTitle");
+const quizForm = document.getElementById("quizForm");
+
 let answers = [];
 
-fetch(`http://localhost:5000/api/quiz/${id}`)
-.then(res => res.json())
-.then(quiz => {
-  quiz.questions.forEach((q, i) => {
-    document.body.innerHTML += `<p>${q.question}</p>`;
-    q.options.forEach((o, j) => {
-      document.body.innerHTML +=
-        `<input type="radio" name="${i}" onclick="answers[${i}]=${j}">${o}`;
-    });
-  });
-});
+if (!quizId) {
+  alert("Invalid quiz link");
+  window.location.href = "./available-quizzes.html";
+}
 
-function submit() {
-  fetch(`http://localhost:5000/api/quiz/submit/${id}`, {
+// Fetch quiz
+fetch(`http://localhost:5000/api/quiz/${quizId}`)
+  .then(res => res.json())
+  .then(quiz => {
+    console.log("Quiz data:", quiz); // debug
+
+    if (!quiz.questions || quiz.questions.length === 0) {
+      quizForm.innerHTML = "<p>No questions found in this quiz.</p>";
+      return;
+    }
+
+    quizTitle.innerText = quiz.title;
+    quizForm.innerHTML = "";
+
+    quiz.questions.forEach((q, i) => {
+      const div = document.createElement("div");
+      div.className = "card";
+
+      div.innerHTML = `
+        <p><b>${i + 1}. ${q.question}</b></p>
+        ${q.options.map((opt, j) => `
+          <label>
+            <input type="radio" name="q${i}" value="${j}">
+            ${opt}
+          </label><br>
+        `).join("")}
+      `;
+
+      quizForm.appendChild(div);
+    });
+
+    quizForm.addEventListener("change", e => {
+      if (e.target.type === "radio") {
+        const index = e.target.name.replace("q", "");
+        answers[index] = Number(e.target.value);
+      }
+    });
+  })
+  .catch(err => {
+    console.error(err);
+    quizForm.innerHTML = "<p>Unable to load quiz.</p>";
+  });
+
+function submitQuiz() {
+  fetch(`http://localhost:5000/api/quiz/submit/${quizId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": localStorage.getItem("token")
     },
     body: JSON.stringify({ answers })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(`Quiz submitted! Your score: ${data.score}`);
+    window.location.href = `./leaderboard.html?id=${quizId}`;
   });
 }
