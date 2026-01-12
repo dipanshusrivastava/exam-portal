@@ -3,6 +3,7 @@ function createQuiz() {
   const questionsText = document.getElementById("questions").value;
   const token = localStorage.getItem("token");
   const passcode = document.getElementById("passcode").value;
+  const duration = document.getElementById("duration").value;
 
   if (!title || !questionsText || !passcode) {
     alert("Please fill all fields");
@@ -26,7 +27,7 @@ function createQuiz() {
     body: JSON.stringify({
       title,
       questions,
-      duration: 10,
+      duration,
       passcode,
       published: true,
     }),

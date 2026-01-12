@@ -4,6 +4,10 @@ const quizPasscode = sessionStorage.getItem("quizPasscode"); // from prompt
 
 const quizTitle = document.getElementById("quizTitle");
 const quizForm = document.getElementById("quizForm");
+let hasSubmitted = false;
+
+let timerInterval;
+let timeLeft = 0;
 
 let answers = [];
 
@@ -25,7 +29,9 @@ fetch(`http://localhost:5000/api/quiz/${quizId}`, {
     return res.json(); // ✅ MISSING STEP
   })
   .then((quiz) => {
-    console.log("Quiz data:", quiz);
+    // console.log("Quiz received from backend:", quiz);
+
+    // console.log("Quiz data:", quiz);
 
     if (!quiz.questions || quiz.questions.length === 0) {
       quizForm.innerHTML = "<p>No questions found in this quiz.</p>";
@@ -33,6 +39,8 @@ fetch(`http://localhost:5000/api/quiz/${quizId}`, {
     }
 
     quizTitle.innerText = quiz.title;
+    // ⏱️ Start timer using quiz duration (minutes → seconds)
+    startTimer(quiz.duration * 60);
     quizForm.innerHTML = "";
 
     quiz.questions.forEach((q, i) => {
@@ -69,28 +77,53 @@ fetch(`http://localhost:5000/api/quiz/${quizId}`, {
   });
 
 function submitQuiz() {
+  if (hasSubmitted) return;
+  hasSubmitted = true;
+  clearInterval(timerInterval); // stop timer
+
   fetch(`http://localhost:5000/api/quiz/submit/${quizId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: localStorage.getItem("token"),
     },
     body: JSON.stringify({ answers }),
   })
     .then((res) => res.json())
     .then((data) => {
-      alert(`Quiz submitted! Your score: ${data.score}`);
-
-      // Force reliable redirect
-      setTimeout(() => {
-        window.location.replace(
-          "/exam-portal-platform/FrontEnd/pages/leaderboard.html?id=" + quizId
-        );
-      }, 0);
+      // alert(`Quiz submitted! Your score: ${data.score}`);
+      window.location.replace(
+        "/exam-portal-platform/FrontEnd/pages/leaderboard.html?id=" + quizId
+      );
     })
     .catch((err) => {
       console.error(err);
-      alert("Failed to submit quiz");
+      hasSubmitted = false; // allow retry if error
     });
 }
 
+function startTimer(seconds) {
+  timeLeft = seconds;
+  const timerDiv = document.getElementById("timer");
+
+  timerInterval = setInterval(() => {
+    const minutes = Math.floor(timeLeft / 60);
+    const secondsLeft = timeLeft % 60;
+
+    // Show timer on UI
+    timerDiv.innerText = `Time Left: ${minutes}:${secondsLeft
+      .toString()
+      .padStart(2, "0")}`;
+
+    // Auto-submit when time ends
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+
+      if (!hasSubmitted) {
+        alert("Time is up! Auto submitting...");
+        submitQuiz();
+      }
+    }
+
+    timeLeft--;
+  }, 1000);
+}

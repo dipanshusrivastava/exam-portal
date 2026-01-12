@@ -41,14 +41,20 @@ Expected body:
 */
 router.post("/create", async (req, res) => {
   try {
-    const { title, passcode, questions } = req.body;
+    const { title, passcode, questions, duration } = req.body;
+
+        console.log("REQ BODY:", req.body); 
 
     if (!title || !passcode || !questions?.length) {
       return res.status(400).json({ message: "Invalid data" });
     }
 
     // 1. Create quiz
-    const quiz = await Quiz.create({ title, passcode });
+    const quiz = await Quiz.create({
+      title,
+      passcode,
+      duration: Number(duration) || 10,
+    });
 
     // 2. Create questions + options
     for (const q of questions) {
@@ -101,6 +107,7 @@ router.get("/:id", async (req, res) => {
     const formattedQuiz = {
       id: quiz.id,
       title: quiz.title,
+      duration: quiz.duration, // 👈 THIS LINE FIXES THE TIMER
       questions: quiz.Questions.map((q) => ({
         question: q.text,
         options: q.Options.map((o) => o.text),
@@ -140,7 +147,7 @@ router.post("/submit/:id", async (req, res) => {
     let score = 0;
 
     quiz.Questions.forEach((question, index) => {
-      const correctIndex = question.Options.findIndex(opt => opt.isCorrect);
+      const correctIndex = question.Options.findIndex((opt) => opt.isCorrect);
       if (answers[index] === correctIndex) {
         score++;
       }
@@ -158,6 +165,5 @@ router.post("/submit/:id", async (req, res) => {
     res.status(500).json({ message: "Failed to submit quiz" });
   }
 });
-
 
 module.exports = router;
