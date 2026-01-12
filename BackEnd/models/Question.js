@@ -1,11 +1,11 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
-const Result = sequelize.define("Result", {
-  score: {
-    type: DataTypes.INTEGER,
+const Question = sequelize.define("Question", {
+  text: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
 });
 
-module.exports = Result;
+module.exports = Question;

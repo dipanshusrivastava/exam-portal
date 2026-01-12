@@ -1,16 +1,23 @@
 const API = "http://localhost:5000/api";
 
+
 function signup() {
-  fetch(`${API}/auth/signup`, {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const role = document.getElementById("role").value;
+
+  fetch("http://localhost:5000/api/auth/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      name: name.value,
-      email: email.value,
-      password: password.value,
-      role: role.value,
+      name, // ✅ must be here
+      email,
+      password,
+      role,
     }),
   });
+  window.location.href = "../index.html";
 }
 
 function login() {

@@ -83,3 +83,4 @@ function submitQuiz() {
       window.location.href = `./leaderboard.html?id=${quizId}`;
     });
 }
+

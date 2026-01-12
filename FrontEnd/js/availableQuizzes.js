@@ -20,7 +20,7 @@ fetch("http://localhost:5000/api/quiz")
 
     quizzes.forEach(quiz => {
       // Safety check
-      if (!quiz._id || !quiz.title) return;
+      if (!quiz.id || !quiz.title) return;
 
       const card = document.createElement("div");
       card.className = "card";
@@ -31,7 +31,7 @@ fetch("http://localhost:5000/api/quiz")
       const btn = document.createElement("button");
       btn.innerText = "Start Test";
       btn.addEventListener("click", () => {
-        startQuiz(quiz._id);
+        startQuiz(quiz.id);
       });
 
       card.appendChild(title);
