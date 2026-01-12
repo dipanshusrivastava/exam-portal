@@ -80,7 +80,17 @@ function submitQuiz() {
     .then((res) => res.json())
     .then((data) => {
       alert(`Quiz submitted! Your score: ${data.score}`);
-      window.location.href = `./leaderboard.html?id=${quizId}`;
+
+      // Force reliable redirect
+      setTimeout(() => {
+        window.location.replace(
+          "/exam-portal-platform/FrontEnd/pages/leaderboard.html?id=" + quizId
+        );
+      }, 0);
+    })
+    .catch((err) => {
+      console.error(err);
+      alert("Failed to submit quiz");
     });
 }
 

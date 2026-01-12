@@ -2,6 +2,8 @@ const API = "http://localhost:5000/api";
 
 
 function signup() {
+  console.log("Signup function called"); // 👈 add this
+
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
