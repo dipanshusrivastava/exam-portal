@@ -11,6 +11,6 @@ app.use(express.json());
 
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/quiz", require("./routes/quiz"));
-app.use("/api/result", require("./routes/result"));
+// app.use("/api/result", require("./routes/result"));
 
 app.listen(5000, () => console.log("Server running on 5000"));

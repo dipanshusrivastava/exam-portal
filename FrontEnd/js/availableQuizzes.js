@@ -46,10 +46,11 @@ fetch("http://localhost:5000/api/quiz")
 
 // Redirect to take quiz page
 function startQuiz(id) {
-  if (!id) {
-    alert("Invalid quiz ID");
-    return;
-  }
+ const inputPasscode = prompt("Enter the passcode for this quiz:");
+  if (!inputPasscode) return;
+
+  // Store entered passcode in sessionStorage temporarily
+  sessionStorage.setItem("quizPasscode", inputPasscode);
 
   window.location.href = `./take-quiz.html?id=${id}`;
 }

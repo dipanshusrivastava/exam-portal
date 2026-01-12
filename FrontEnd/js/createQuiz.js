@@ -2,8 +2,9 @@ function createQuiz() {
   const title = document.getElementById("title").value.trim();
   const questionsText = document.getElementById("questions").value;
   const token = localStorage.getItem("token");
+  const passcode = document.getElementById("passcode").value;
 
-  if (!title || !questionsText) {
+  if (!title || !questionsText || !passcode) {
     alert("Please fill all fields");
     return;
   }
@@ -20,17 +21,18 @@ function createQuiz() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": token
+      Authorization: token,
     },
     body: JSON.stringify({
       title,
       questions,
       duration: 10,
-      published: true
-    })
+      passcode,
+      published: true,
+    }),
   })
-    .then(res => res.json())
-    .then(data => {
+    .then((res) => res.json())
+    .then((data) => {
       alert("Quiz created successfully");
       // ✅ Redirect to dashboard (best UX)
       window.location.href = "./dashboard.html";

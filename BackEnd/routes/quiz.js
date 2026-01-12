@@ -18,11 +18,21 @@ router.post("/create", auth, async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const quiz = await Quiz.findById(req.params.id); // ❗ NO .select()
+    console.log(
+      "QUESTIONS TYPE:",
+      Array.isArray(quiz.questions),
+      quiz.questions
+    );
 
     if (!quiz) {
       return res.status(404).json({ message: "Quiz not found" });
     }
 
+    // Check passcode
+    const enteredPasscode = req.headers["x-passcode"]; // get from frontend
+    if (!enteredPasscode || enteredPasscode !== quiz.passcode) {
+      return res.status(403).json({ message: "Incorrect passcode" });
+    }
     res.json(quiz);
   } catch (err) {
     res.status(400).json({ message: "Invalid quiz id" });

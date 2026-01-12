@@ -20,7 +20,7 @@ const quizSchema = Schema({
   ],
   startTime: Date,
   duration: Number,
-  passcode: String,
+  passcode: { type: String, required: true }, 
   published: Boolean,
 });
 

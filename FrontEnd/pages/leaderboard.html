@@ -2,32 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Leaderboard | Exam Portal</title>
+  <title>Leaderboard</title>
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-
-  <div class="dashboard">
+  <div class="container">
     <h1>Leaderboard</h1>
-
-    <table>
+    <table id="leaderboardTable">
       <thead>
         <tr>
           <th>Rank</th>
-          <th>User</th>
+          <th>Name</th>
           <th>Score</th>
         </tr>
       </thead>
-      <tbody id="leaderboardBody">
-        <tr>
-          <td colspan="3">Loading...</td>
-        </tr>
-      </tbody>
+      <tbody></tbody>
     </table>
-
-    <p style="text-align:center; margin-top:20px;">
-      <a href="./dashboard.html">Back to Dashboard</a>
-    </p>
   </div>
 
   <script src="../js/leaderboard.js"></script>
