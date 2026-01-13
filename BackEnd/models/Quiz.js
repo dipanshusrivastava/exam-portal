@@ -14,6 +14,10 @@ const Quiz = sequelize.define("Quiz", {
     type: DataTypes.INTEGER,
     defaultValue: 10,
   },
+  startTime: {
+    type: DataTypes.STRING, // since DB column is TEXT
+    allowNull: true,
+  },
 });
 
 module.exports = Quiz;

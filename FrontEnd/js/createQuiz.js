@@ -4,8 +4,9 @@ function createQuiz() {
   const token = localStorage.getItem("token");
   const passcode = document.getElementById("passcode").value;
   const duration = document.getElementById("duration").value;
+  const startTime = document.getElementById("startTime").value;
 
-  if (!title || !questionsText || !passcode) {
+  if (!title || !questionsText || !passcode || !startTime) {
     alert("Please fill all fields");
     return;
   }
@@ -30,6 +31,7 @@ function createQuiz() {
       duration,
       passcode,
       published: true,
+      startTime,
     }),
   })
     .then((res) => res.json())

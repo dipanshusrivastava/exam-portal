@@ -11,7 +11,7 @@ GET all quizzes (titles only)
 router.get("/", async (req, res) => {
   try {
     const quizzes = await Quiz.findAll({
-      attributes: ["id", "title"],
+      attributes: ["id", "title", "startTime"],
     });
 
     res.json(quizzes);
@@ -41,9 +41,9 @@ Expected body:
 */
 router.post("/create", async (req, res) => {
   try {
-    const { title, passcode, questions, duration } = req.body;
+    const { title, passcode, questions, duration, startTime } = req.body;
 
-        console.log("REQ BODY:", req.body); 
+    console.log("REQ BODY:", req.body);
 
     if (!title || !passcode || !questions?.length) {
       return res.status(400).json({ message: "Invalid data" });
@@ -54,6 +54,7 @@ router.post("/create", async (req, res) => {
       title,
       passcode,
       duration: Number(duration) || 10,
+      startTime: startTime || null,
     });
 
     // 2. Create questions + options
@@ -79,6 +80,30 @@ router.post("/create", async (req, res) => {
   }
 });
 
+// GET LEADERBOARD FOR A QUIZ
+router.get("/leaderboard/:id", async (req, res) => {
+  try {
+    const quizId = req.params.id;
+
+    const results = await Result.findAll({
+      where: { QuizId: quizId },
+      order: [["score", "DESC"]],
+    });
+
+    // Add rank manually
+    const leaderboard = results.map((r, index) => ({
+      rank: index + 1,
+      name: r.name || "Anonymous",
+      score: r.score,
+    }));
+
+    res.json(leaderboard);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to load leaderboard" });
+  }
+});
+
 /*
 -----------------------------------
 GET QUIZ BY ID (with passcode)
@@ -95,6 +120,19 @@ router.get("/:id", async (req, res) => {
 
     if (!quiz) {
       return res.status(404).json({ message: "Quiz not found" });
+    }
+    
+    // startTime
+    if (quiz.startTime) {
+      const now = new Date();
+      const start = new Date(quiz.startTime);
+
+      if (now < start) {
+        return res.status(403).json({
+          message: "Quiz has not started yet",
+          startsIn: start - now,
+        });
+      }
     }
 
     // Passcode check

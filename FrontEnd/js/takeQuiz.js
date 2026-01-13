@@ -16,23 +16,50 @@ if (!quizId) {
   window.location.href = "./available-quizzes.html";
 }
 
+// function showEarlyMessage(ms) {
+//   const timerDiv = document.getElementById("timer");
+
+//   let remaining = Math.floor(ms / 1000);
+
+//   const interval = setInterval(() => {
+//     const h = Math.floor(remaining / 3600);
+//     const m = Math.floor((remaining % 3600) / 60);
+//     const s = remaining % 60;
+
+//     timerDiv.innerText = `Test will start in ${h}h ${m}m ${s}s`;
+
+//     if (remaining <= 0) {
+//       clearInterval(interval);
+//       location.reload(); // reload and quiz will open
+//     }
+
+//     remaining--;
+//   }, 1000);
+// }
+
 // Fetch quiz
 fetch(`http://localhost:5000/api/quiz/${quizId}`, {
   headers: {
     "x-passcode": quizPasscode,
   },
 })
-  .then((res) => {
-    if (!res.ok) {
-      throw new Error("Incorrect passcode or quiz not found");
-    }
-    return res.json(); // ✅ MISSING STEP
+  .then(async (res) => {
+    const data = await res.json();
+
+  // 👇 Quiz not started yet
+  if (!res.ok && data.message === "Quiz has not started yet") {
+    alert("You are early. The test will start soon.");
+    window.location.href = "./available-quizzes.html";
+    return;
+  }
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to load quiz");
+  }
+
+  return data;
   })
   .then((quiz) => {
-    // console.log("Quiz received from backend:", quiz);
-
-    // console.log("Quiz data:", quiz);
-
     if (!quiz.questions || quiz.questions.length === 0) {
       quizForm.innerHTML = "<p>No questions found in this quiz.</p>";
       return;
