@@ -1,5 +1,9 @@
 const params = new URLSearchParams(window.location.search);
 const quizId = params.get("id");
+if (localStorage.getItem(`attempted_${quizId}`)) {
+  alert("You have already attempted this quiz.");
+  window.location.href = "./available-quizzes.html";
+}
 const quizPasscode = sessionStorage.getItem("quizPasscode"); // from prompt
 
 const quizTitle = document.getElementById("quizTitle");
@@ -46,18 +50,18 @@ fetch(`http://localhost:5000/api/quiz/${quizId}`, {
   .then(async (res) => {
     const data = await res.json();
 
-  // 👇 Quiz not started yet
-  if (!res.ok && data.message === "Quiz has not started yet") {
-    alert("You are early. The test will start soon.");
-    window.location.href = "./available-quizzes.html";
-    return;
-  }
+    // 👇 Quiz not started yet
+    if (!res.ok && data.message === "Quiz has not started yet") {
+      alert("You are early. The test will start soon.");
+      window.location.href = "./available-quizzes.html";
+      return;
+    }
 
-  if (!res.ok) {
-    throw new Error(data.message || "Failed to load quiz");
-  }
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to load quiz");
+    }
 
-  return data;
+    return data;
   })
   .then((quiz) => {
     if (!quiz.questions || quiz.questions.length === 0) {
@@ -117,6 +121,7 @@ function submitQuiz() {
   })
     .then((res) => res.json())
     .then((data) => {
+      localStorage.setItem(`attempted_${quizId}`, "true");
       // alert(`Quiz submitted! Your score: ${data.score}`);
       window.location.replace(
         "/exam-portal-platform/FrontEnd/pages/leaderboard.html?id=" + quizId
